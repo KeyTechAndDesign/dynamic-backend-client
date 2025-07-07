@@ -1,10 +1,14 @@
 {
   "name": "@keytd/dynamic-backend-client",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "JavaScript client for the Dynamic Backend API",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "docs": "jsdoc -c jsdoc.json",
+    "docs:serve": "http-server docs/ -o"
   },
   "keywords": [
     "api",
@@ -19,12 +23,33 @@
   "engines": {
     "node": ">=14.0.0"
   },
+  "devDependencies": {
+    "jest": "^29.5.0",
+    "@babel/core": "^7.22.5",
+    "@babel/preset-env": "^7.22.5",
+    "babel-jest": "^29.5.0",
+    "jsdoc": "^4.0.2",
+    "docdash": "^2.0.1",
+    "http-server": "^14.1.1"
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.js$": "babel-jest"
+    },
+    "testEnvironment": "node",
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ],
+    "collectCoverageFrom": [
+      "lib/**/*.js"
+    ]
+  },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/your-org/dynamic-backend-client.git"
+    "url": "git+https://github.com/KeyTechAndDesign/dynamic-backend-client.git"
   },
   "bugs": {
-    "url": "https://github.com/your-org/dynamic-backend-client/issues"
+    "url": "https://github.com/KeyTechAndDesign/dynamic-backend-client/issues"
   },
-  "homepage": "https://github.com/your-org/dynamic-backend-client#readme"
+  "homepage": "https://github.com/KeyTechAndDesign/dynamic-backend-client#readme"
 }

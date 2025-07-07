@@ -412,7 +412,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 1. Clone the repository
    ```bash
-   git clone https://github.com/your-org/dynamic-backend-client.git
+   git clone https://github.com/KeyTechAndDesign/dynamic-backend-client.git
    cd dynamic-backend-client
    ```
 
