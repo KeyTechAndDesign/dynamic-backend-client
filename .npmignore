@@ -1,0 +1,14 @@
+# Development files
+.git
+.github
+.gitignore
+.vscode
+.idea
+*.log
+*.tgz
+
+# Test files
+test/
+tests/
+__tests__/
+coverage/
