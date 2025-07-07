@@ -17,6 +17,7 @@ A JavaScript client library for interacting with the Dynamic Backend API. This l
   - [ApiClient](#apiclient)
   - [BlogClient](#blogclient)
   - [TableClient](#tableclient)
+  - [Localization Utility](#localization-utility)
 - [❌ Error Handling](#-error-handling)
 - [🌐 Multilingual Support](#-multilingual-support)
 - [🔄 Compatibility](#-compatibility)
@@ -33,6 +34,8 @@ A JavaScript client library for interacting with the Dynamic Backend API. This l
 - 🛡️ **Type Definitions** - Complete TypeScript definitions for better development experience
 - 🚀 **Lightweight** - Minimal dependencies for faster loading
 - 🧩 **Modular Design** - Use only the components you need
+- 📦 **Optional Request Caching** - Built-in caching mechanism that can be enabled for improved performance and reduced API calls
+- 🌍 **Client-side Localization** - Utilities for handling localized fields in data objects
 
 ## 📦 Installation
 
@@ -108,6 +111,42 @@ async function getPostBySlug(slug) {
 }
 ```
 
+### Working with Request Caching
+
+```javascript
+// Configure caching when creating the API client (caching is disabled by default)
+const apiClient = new ApiClient({
+  baseUrl: 'https://your-api-url.com',
+  schema: 'your_schema',
+  enableCache: true,                // Enable caching (default: false)
+  cacheMaxAge: 5 * 60 * 1000        // Cache expiry time in ms (default: 5 minutes)
+});
+
+// Make a request that will be cached (since we enabled caching)
+async function fetchDataWithCache() {
+  try {
+    // This response will be cached (because we enabled caching)
+    const firstResponse = await apiClient.get('/endpoint', { param: 'value' });
+    console.log('First request:', firstResponse);
+
+    // This will use the cached response if within cacheMaxAge
+    const secondResponse = await apiClient.get('/endpoint', { param: 'value' });
+    console.log('Second request (from cache):', secondResponse);
+
+    // Skip cache for this specific request
+    const freshResponse = await apiClient.get('/endpoint', { param: 'value' }, {}, { skipCache: true });
+    console.log('Fresh request (bypassing cache):', freshResponse);
+
+    // Clear cache for a specific endpoint
+    apiClient.clearCache('/endpoint');
+
+    // Clear the entire cache
+    apiClient.clearCache();
+  } catch (error) {
+    console.error('Error:', error.message);
+  }
+}
+```
 ### Working with Dynamic Tables
 
 ```javascript
@@ -155,7 +194,9 @@ The base client that handles error handling and HTTP requests.
 const apiClient = new ApiClient({
   baseUrl: 'https://api.example.com',  // Required: Base URL for the API
   schema: 'public',                    // Optional: Schema for multi-tenant support (default: 'public')
-  timeout: 30000                       // Optional: Request timeout in milliseconds (default: 30000)
+  timeout: 30000,                      // Optional: Request timeout in milliseconds (default: 30000)
+  enableCache: true,                   // Optional: Enable response caching (default: false)
+  cacheMaxAge: 300000                  // Optional: Maximum age of cached responses in ms (default: 300000 - 5 minutes)
 });
 ```
 
@@ -164,7 +205,8 @@ const apiClient = new ApiClient({
 | Method | Description | Parameters | Returns |
 |--------|-------------|------------|---------|
 | `setSchema(schema)` | Set the schema for multi-tenant support | `schema` (string): Schema name | `void` |
-| `get(endpoint, params, headers)` | Make a GET request | `endpoint` (string): API endpoint<br>`params` (object, optional): Query parameters<br>`headers` (object, optional): Additional headers | `Promise<any>`: Response data |
+| `clearCache(endpoint)` | Clear the request cache | `endpoint` (string, optional): Specific endpoint to clear (clears all if not specified) | `void` |
+| `get(endpoint, params, headers, options)` | Make a GET request | `endpoint` (string): API endpoint<br>`params` (object, optional): Query parameters<br>`headers` (object, optional): Additional headers<br>`options` (object, optional):<br>- `skipCache` (boolean): Skip cache for this request | `Promise<any>`: Response data |
 
 ### BlogClient
 
@@ -231,10 +273,88 @@ const tableClient = new TableClient(apiClient, {
 |--------|-------------|------------|---------|
 | `getTables()` | Get a list of all tables in the current schema | None | `Promise<string[]>`: Array of table names |
 | `getTableInfo(tableName)` | Get metadata about a specific table | `tableName` (string): Name of the table | `Promise<Object>`: Table metadata including columns, types, and constraints |
-| `getRecords(tableName, options)` | Get records from a table with pagination and filtering | `tableName` (string): Name of the table<br>`options` (object, optional):<br>- `page` (number, default: 1): Page number<br>- `pageSize` (number, default: 10): Number of records per page<br>- `filter` (object): Key-value pairs for filtering records | `Promise<Object>`: Records with pagination information |
-| `getRecordById(tableName, id)` | Get a single record by ID | `tableName` (string): Name of the table<br>`id` (number\|string): ID of the record | `Promise<Object>`: Record data |
+| `getRecords(tableName, options)` | Get records from a table with pagination and filtering | `tableName` (string): Name of the table<br>`options` (object, optional):<br>- `page` (number, default: 1): Page number<br>- `pageSize` (number, default: 10): Number of records per page<br>- `filter` (object): Key-value pairs for filtering records<br>- `locale` (string): Locale for localizing the returned data (e.g., 'en', 'az', 'ru')<br>- `defaultLocale` (string, default: 'en'): Default locale to fall back to if the requested locale is not available | `Promise<Object>`: Records with pagination information |
+| `getRecordById(tableName, id, options)` | Get a single record by ID | `tableName` (string): Name of the table<br>`id` (number\|string): ID of the record<br>`options` (object, optional):<br>- `locale` (string): Locale for localizing the returned data (e.g., 'en', 'az', 'ru')<br>- `defaultLocale` (string, default: 'en'): Default locale to fall back to if the requested locale is not available | `Promise<Object>`: Record data |
+
+### Localization Utility
+
+Utility functions for handling localized fields in data objects. These utilities help you work with multilingual content when the backend returns fields with locale suffixes.
+
+```javascript
+import { getLocalizedField, localizeObject } from '@keytd/dynamic-backend-client';
+```
+
+#### Methods
+
+| Method | Description | Parameters | Returns |
+|--------|-------------|------------|---------|
+| `getLocalizedField(obj, baseFieldName, locale, defaultLocale)` | Extracts the localized value from an object based on the provided locale | `obj` (object): The object containing localized fields<br>`baseFieldName` (string): The base name of the field without locale suffix<br>`locale` (string): The current locale (e.g., 'az', 'en', 'ru')<br>`defaultLocale` (string, optional): The fallback locale if the requested locale is not available (default: 'en') | The localized value or undefined if not found |
+| `localizeObject(obj, locale, defaultLocale)` | Processes an object to replace all fields that have localized versions with their localized values | `obj` (object): The object containing localized fields<br>`locale` (string): The current locale (e.g., 'az', 'en', 'ru')<br>`defaultLocale` (string, optional): The fallback locale if the requested locale is not available (default: 'en') | A new object with localized fields |
 
 #### Example Usage
+
+```javascript
+// Example data with localized fields
+const product = {
+  id: 1,
+  nameEn: 'Laptop',
+  nameAz: 'Noutbuk',
+  nameRu: 'Ноутбук',
+  description_en: 'Powerful laptop for professionals',
+  description_az: 'Peşəkarlar üçün güclü noutbuk',
+  description_ru: 'Мощный ноутбук для профессионалов',
+  price: 999.99,
+  inStock: true
+};
+
+// Get a specific localized field
+const productName = getLocalizedField(product, 'name', 'en'); // Returns 'Laptop'
+const productNameAz = getLocalizedField(product, 'name', 'az'); // Returns 'Noutbuk'
+const productDesc = getLocalizedField(product, 'description', 'ru'); // Returns 'Мощный ноутбук для профессионалов'
+
+// Fallback to default locale if requested locale is not available
+const productNameFr = getLocalizedField(product, 'name', 'fr', 'en'); // Returns 'Laptop' (fallback to English)
+
+// Localize the entire object
+const localizedProduct = localizeObject(product, 'az');
+console.log(localizedProduct);
+// Output:
+// {
+//   id: 1,
+//   name: 'Noutbuk',
+//   description: 'Peşəkarlar üçün güclü noutbuk',
+//   price: 999.99,
+//   inStock: true
+// }
+
+// Working with API responses
+async function getLocalizedProducts(locale = 'en') {
+  try {
+    // Fetch products from API
+    const response = await apiClient.get('/products');
+
+    // Localize each product in the response
+    const localizedProducts = response.data.map(product => 
+      localizeObject(product, locale)
+    );
+
+    return localizedProducts;
+  } catch (error) {
+    console.error('Error fetching products:', error.message);
+  }
+}
+```
+
+#### Supported Field Naming Patterns
+
+The localization utility supports two common naming patterns for localized fields:
+
+1. **CamelCase format**: `fieldNameLocale` (e.g., `nameEn`, `descriptionAz`)
+2. **Underscore format**: `field_name_locale` (e.g., `name_en`, `description_az`)
+
+The utility will check both formats when looking for localized fields.
+
+#### Working with Dynamic Tables
 
 ```javascript
 // Get list of available tables
@@ -272,6 +392,30 @@ console.log('Records:', records.data);
 // Get a single record by ID
 const product = await tableClient.getRecordById('products', 123);
 console.log('Product details:', product);
+
+// Get localized records with automatic field localization
+const localizedRecords = await tableClient.getRecords('products', {
+  page: 1,
+  pageSize: 20,
+  filter: {
+    category: 'electronics'
+  },
+  locale: 'az', // Get records localized to Azerbaijani
+  defaultLocale: 'en' // Fall back to English if Azerbaijani translation is not available
+});
+
+console.log('Localized records:', localizedRecords.data);
+// The data will automatically have all localized fields (nameAz, descriptionAz, etc.)
+// converted to their base names (name, description) with the localized values
+
+// Get a single localized record by ID
+const localizedProduct = await tableClient.getRecordById('products', 123, {
+  locale: 'ru', // Get the record localized to Russian
+  defaultLocale: 'en' // Fall back to English if Russian translation is not available
+});
+
+console.log('Localized product:', localizedProduct);
+// The product will have all localized fields automatically converted
 ```
 
 #### Working with Dynamic Tables
@@ -294,11 +438,11 @@ The `getRecords` method returns data in the following format:
     { id: 2, name: 'Product 2', price: 49.99, ... },
     // ...
   ],
-  pagination: {
+  pagination; {
     total: 157,       // Total number of records
-    page: 1,          // Current page
-    pageSize: 20,     // Records per page
-    totalPages: 8     // Total number of pages
+    page;1,          // Current page
+    pageSize; 20,     // Records per page
+    totalPages; 8     // Total number of pages
   }
 }
 ```
