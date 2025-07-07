@@ -1,6 +1,6 @@
 {
   "name": "@keytd/dynamic-backend-client",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "JavaScript client for the Dynamic Backend API",
   "main": "index.js",
   "scripts": {
@@ -9,16 +9,13 @@
   "keywords": [
     "api",
     "client",
-    "nextjs",
     "blog",
     "dynamic",
-    "tables"
+    "tables",
+    "javascript"
   ],
   "author": "Your Organization",
   "license": "MIT",
-  "peerDependencies": {
-    "next": ">=12.0.0"
-  },
   "engines": {
     "node": ">=14.0.0"
   },

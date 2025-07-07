@@ -1,4 +1,4 @@
-// Dynamic Backend Client for Next.js
+// Dynamic Backend Client
 // Main entry point for the library
 
 export { default as ApiClient } from './lib/apiClient';

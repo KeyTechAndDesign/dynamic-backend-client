@@ -1,11 +1,10 @@
-# Dynamic Backend Client for Next.js
+# Dynamic Backend Client
 
 [![npm version](https://img.shields.io/npm/v/@keytd/dynamic-backend-client.svg)](https://www.npmjs.com/package/@keytd/dynamic-backend-client)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Node.js Version](https://img.shields.io/node/v/@keytd/dynamic-backend-client.svg)](https://nodejs.org)
-[![Next.js Version](https://img.shields.io/badge/next.js->=12.0.0-blue.svg)](https://nextjs.org)
 
-A JavaScript client library for interacting with the Dynamic Backend API from Next.js applications. This library provides a clean, type-documented interface for working with blog content and dynamic tables.
+A JavaScript client library for interacting with the Dynamic Backend API. This library provides a clean, type-documented interface for working with blog content and dynamic tables.
 
 > **Note:** This library only supports GET requests and does not require authorization. It is designed for read-only operations with public APIs.
 
@@ -26,7 +25,7 @@ A JavaScript client library for interacting with the Dynamic Backend API from Ne
 
 ## ✨ Features
 
-- 🔄 **Simple Integration** - Easy to integrate with Next.js applications
+- 🔄 **Framework Agnostic** - Works with any JavaScript environment that supports the Fetch API
 - 📊 **Dynamic Tables** - Access and query dynamic database tables
 - 📝 **Blog Content** - Retrieve blog posts, categories, tags, and comments
 - 🌐 **Multilingual Support** - Built-in support for multilingual content
@@ -390,15 +389,16 @@ const germanPost = await blogClient.getPostBySlug('welcome-post', {
 | Dependency | Minimum Version |
 |------------|-----------------|
 | Node.js | 14.0.0 or higher |
-| Next.js | 12.0.0 or higher |
 
 ### Browser Support
 
-This library is primarily designed for use in Next.js applications, but it's compatible with any modern JavaScript environment that supports:
+This library is compatible with any modern JavaScript environment that supports:
 
 - Promises
 - Fetch API
 - ES6 features
+
+This includes modern browsers, Node.js applications, and frameworks like React, Vue, Angular, Next.js, etc.
 
 ### TypeScript Support
 
