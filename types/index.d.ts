@@ -191,6 +191,7 @@ declare module '@keytd/dynamic-backend-client' {
       page?: number;
       pageSize?: number;
       filter?: Record<string, any>;
+      order_by?: string;
     }): Promise<any>;
 
     /**

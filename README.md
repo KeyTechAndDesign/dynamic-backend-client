@@ -255,10 +255,11 @@ console.log('Table structure:', tableInfo);
 //   ]
 // }
 
-// Get filtered records with pagination
+// Get filtered records with pagination and ordering
 const records = await tableClient.getRecords('products', {
   page: 1,
   pageSize: 20,
+  order_by: 'price DESC',
   filter: {
     category: 'electronics',
     status: 'active'
@@ -282,6 +283,32 @@ The TableClient is particularly useful for applications that need to work with d
 2. **Content Management Systems**: Retrieve structured content from various tables
 3. **Data Visualization**: Fetch data for charts and reports from different data sources
 4. **Custom Data-Driven Applications**: Work with application-specific data tables
+
+#### Ordering Records
+
+You can order records by adding the `order_by` parameter to the `getRecords` method. The parameter accepts a column name followed by an optional direction (`ASC` or `DESC`). If no direction is specified, `ASC` is used by default.
+
+```javascript
+// Order by price in descending order
+const expensiveProducts = await tableClient.getRecords('products', {
+  order_by: 'price DESC'
+});
+
+// Order by name in ascending order (default)
+const alphabeticalProducts = await tableClient.getRecords('products', {
+  order_by: 'name'
+});
+
+// Combine ordering with filtering and pagination
+const filteredOrderedProducts = await tableClient.getRecords('products', {
+  page: 1,
+  pageSize: 10,
+  order_by: 'created_at DESC',
+  filter: {
+    category: 'electronics'
+  }
+});
+```
 
 #### Response Format
 
