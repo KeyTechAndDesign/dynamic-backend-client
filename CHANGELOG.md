@@ -8,12 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
+### Changed
+
+### Fixed
+
+## [1.0.5] - 2023-07-10
+
+### Added
 - Comprehensive examples directory with sample code for different use cases
 - Unit tests for all client classes with Jest
 - Test configuration in package.json
 - Babel configuration for ES modules support in tests
 - README files for examples and tests directories
 - This CHANGELOG file
+- Added `order_by` parameter to TableClient for sorting records
 
 ### Changed
 - Improved error handling in ApiClient with more detailed error messages
