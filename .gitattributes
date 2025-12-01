@@ -1,0 +1,23 @@
+# Exclude non-PHP assets and dev files from Composer distribution archives
+# See: https://getcomposer.org/doc/01-basic-usage.md#excluding-files-from-packages
+
+/.github            export-ignore
+/.gitignore         export-ignore
+/.editorconfig      export-ignore
+/.gitattributes     export-ignore
+/node_modules/      export-ignore
+/examples/          export-ignore
+/tests/             export-ignore
+/php/tests/         export-ignore
+/jsdoc.json         export-ignore
+/babel.config.js    export-ignore
+/package.json       export-ignore
+/package-lock.json  export-ignore
+/pnpm-lock.yaml     export-ignore
+/yarn.lock          export-ignore
+/lib/               export-ignore
+/types/             export-ignore
+/index.js           export-ignore
+/CHANGELOG.md       export-ignore
+/CONTRIBUTING.md    export-ignore
+/CODE_OF_CONDUCT.md export-ignore

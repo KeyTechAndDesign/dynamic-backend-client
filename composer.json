@@ -1,0 +1,39 @@
+{
+  "name": "keytd/dynamic-backend-client-php",
+  "description": "PHP client (GET-only) for Dynamic Backend API included alongside the JS library.",
+  "type": "library",
+  "license": "MIT",
+  "homepage": "https://github.com/keytd/dynamic-backend-client",
+  "authors": [
+    {
+      "name": "KeyTD",
+      "homepage": "https://github.com/keytd"
+    }
+  ],
+  "keywords": [
+    "dynamic-backend",
+    "client",
+    "api",
+    "php",
+    "read-only"
+  ],
+  "support": {
+    "issues": "https://github.com/keytd/dynamic-backend-client/issues",
+    "source": "https://github.com/keytd/dynamic-backend-client"
+  },
+  "require": {
+    "php": ">=8.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.6 || ^10"
+  },
+  "autoload": {
+    "psr-4": {
+      "KeyTD\\DynamicBackendClient\\": "php/"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit -c php/phpunit.xml.dist",
+    "tests": "vendor/bin/phpunit -c php/phpunit.xml.dist"
+  }
+}

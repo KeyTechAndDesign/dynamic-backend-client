@@ -50,6 +50,120 @@ yarn add @keytd/dynamic-backend-client
 pnpm add @keytd/dynamic-backend-client
 ```
 
+### PHP (Composer) Installation
+
+This repository now includes a lightweight PHP implementation of the Dynamic Backend Client for read-only GET access.
+
+You can add it to your project in several ways depending on your workflow:
+
+1) Packagist (planned)
+- If/when the PHP package is published to Packagist, you will be able to require it normally:
+  composer require keytd/dynamic-backend-client-php
+
+2) VCS repository (use directly from GitHub)
+- Add this repository as a Composer VCS repository and require the PHP package name from composer.json in this repo:
+
+```json
+{
+  "repositories": [
+    { "type": "vcs", "url": "https://github.com/keytd/dynamic-backend-client" }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "keytd/dynamic-backend-client-php": "dev-main"
+  }
+}
+```
+
+Then run:
+
+```bash
+composer update keytd/dynamic-backend-client-php
+```
+
+3) Local path repository (use a local clone)
+- If you have the repository checked out locally, you can reference it via a path repository:
+
+```json
+{
+  "repositories": [
+    { "type": "path", "url": "../dynamic-backend-client" }
+  ],
+  "require": {
+    "php": ">=8.0",
+    "keytd/dynamic-backend-client-php": "dev-main"
+  }
+}
+```
+
+Then run:
+
+```bash
+composer update keytd/dynamic-backend-client-php
+```
+
+4) Copy-only (no VCS)
+- Copy the php/ directory into your project and set up PSR-4 autoloading to that folder:
+
+```json
+{
+  "name": "your-vendor/your-project",
+  "require": {
+    "php": ">=8.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "KeyTD\\DynamicBackendClient\\": "php/"
+    }
+  }
+}
+```
+
+Then run:
+
+```bash
+composer dump-autoload
+```
+
+### PHP Client Status
+
+- Scope: Read-only, GET-only client that mirrors the JS client's surface for Blog and Tables plus localization utilities.
+- Implemented: ApiClient (cURL-based HTTP, timeout, X-Schema header, optional in-memory caching), BlogClient (posts, categories, tags, comments), TableClient (list/info/records/record by id with client-side localization), LocalizeUtil.
+- Tested: PHPUnit test suite included (no network calls; uses stubs). Run with composer test.
+- Requirements: PHP 8.0+, ext-curl enabled.
+- Not included: POST/PUT/PATCH/DELETE, authentication flows.
+
+### Publishing the PHP package to Packagist
+
+You do not need a separate repository for the PHP client. Packagist can consume this same repository (monorepo) as long as a valid composer.json is present at the repository root — which it is. We’ve also added a .gitattributes file to ensure Composer dist archives include only the necessary PHP files.
+
+Recommended steps:
+
+1) Prepare the repository
+- Ensure composer.json is correct (package name, description, license, autoload). This repo already uses: keytd/dynamic-backend-client-php and PSR-4 autoload for KeyTD\\DynamicBackendClient\\ → php/.
+- Optional but recommended: keep .gitattributes in place to export-ignore non-PHP assets (JS, tests, etc.).
+
+2) Tag a release
+- Commit any pending changes.
+- Create a semantic version tag, e.g. v0.1.0:
+  git tag v0.1.0
+  git push origin v0.1.0
+
+3) Submit to Packagist
+- Log in to https://packagist.org and click “Submit”.
+- Paste the GitHub repository URL (this repo) and submit.
+- Packagist will detect the package from the root composer.json and list versions based on your Git tags.
+
+4) Enable auto-updates
+- On the Packagist package page, enable GitHub auto-updates (if prompted) or add the Packagist GitHub hook from the Settings → Webhooks of your GitHub repo. This keeps Packagist in sync when you push new tags.
+
+5) Usage after publish
+- Consumers can install via Composer:
+  composer require keytd/dynamic-backend-client-php
+
+When would a separate repo be useful?
+- If you want a lighter OSS footprint, isolated issue tracking, or different release cadence for PHP vs JS. In that case, you can move the php/ folder and composer.json into a new repository, keep the same package name (or choose a new one), and submit that repo to Packagist. This is optional — the monorepo approach works fine and is common.
+
 ## 🚀 Quick Start
 
 ### Basic Setup
@@ -110,6 +224,64 @@ async function getPostBySlug(slug) {
   }
 }
 ```
+
+### PHP Quick Start
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+use KeyTD\DynamicBackendClient\ApiClient;
+use KeyTD\DynamicBackendClient\BlogClient;
+use KeyTD\DynamicBackendClient\TableClient;
+
+$apiClient = new ApiClient([
+    'baseUrl' => 'https://your-api-url.com',
+    'schema' => 'your_schema',
+    'timeout' => 30000, // milliseconds
+    'enableCache' => true,
+]);
+
+$blog = new BlogClient($apiClient);
+$table = new TableClient($apiClient);
+
+// Fetch posts
+$posts = $blog->getPosts([
+    'page' => 1,
+    'page_size' => 10,
+    'status' => 'published',
+    'include_tags' => true,
+    'lang' => 'en'
+]);
+
+// Fetch records from a table with localization
+$records = $table->getRecords('products', [
+    'page' => 1,
+    'pageSize' => 10,
+    'filter' => ['category' => 'electronics'],
+    'locale' => 'en',
+    'defaultLocale' => 'en'
+]);
+
+// Fetch comments for a post (mirrors JS client parameters)
+$comments = $blog->getCommentsByPostId(123, [
+    'status' => 'approved', // default
+    'lang' => 'en',
+]);
+
+// Fetch a single comment by ID
+$comment = $blog->getCommentById(456, [
+    'lang' => 'en',
+]);
+```
+
+### Troubleshooting (PHP)
+
+- Class not found: Ensure Composer autoload is configured and vendor/autoload.php is required. If using the copy-only approach, confirm the PSR-4 mapping points to the php/ directory and run composer dump-autoload.
+- cURL errors: The PHP extension ext-curl must be enabled. On Linux, install/enable php-curl. On Windows, enable the curl extension in php.ini and restart your web server/CLI session.
+- PHP version: Requires PHP >= 8.0.
+- Timeouts: The timeout is in milliseconds. Adjust when constructing ApiClient: new ApiClient(['timeout' => 30000]).
+- Caching: To enable in-process request caching, pass enableCache => true (and optionally cacheMaxAge in ms) to ApiClient.
 
 ### Working with Request Caching
 
