@@ -183,4 +183,70 @@ describe('ApiClient', () => {
       await expect(apiClient.get('/test-endpoint')).rejects.toThrow('Request timeout after 5000ms');
     });
   });
+
+  describe('post', () => {
+    test('should make a POST request with the correct URL, headers and body', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        status: 201,
+        json: async () => ({ id: 1 })
+      });
+      
+      const data = { title: 'Test' };
+      const result = await apiClient.post('/test-endpoint', data);
+      
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.example.com/test-endpoint',
+        expect.objectContaining({
+          method: 'POST',
+          headers: expect.objectContaining({
+            'Content-Type': 'application/json'
+          }),
+          body: JSON.stringify(data)
+        })
+      );
+      expect(result).toEqual({ id: 1 });
+    });
+  });
+
+  describe('put', () => {
+    test('should make a PUT request', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        status: 200,
+        json: async () => ({ updated: true })
+      });
+      
+      const data = { title: 'Updated' };
+      const result = await apiClient.put('/test-endpoint/1', data);
+      
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.example.com/test-endpoint/1',
+        expect.objectContaining({
+          method: 'PUT',
+          body: JSON.stringify(data)
+        })
+      );
+      expect(result).toEqual({ updated: true });
+    });
+  });
+
+  describe('delete', () => {
+    test('should make a DELETE request', async () => {
+      fetch.mockResolvedValueOnce({
+        ok: true,
+        status: 204
+      });
+      
+      const result = await apiClient.delete('/test-endpoint/1');
+      
+      expect(fetch).toHaveBeenCalledWith(
+        'https://api.example.com/test-endpoint/1',
+        expect.objectContaining({
+          method: 'DELETE'
+        })
+      );
+      expect(result).toBeNull();
+    });
+  });
 });

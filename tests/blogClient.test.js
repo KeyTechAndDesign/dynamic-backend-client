@@ -234,15 +234,13 @@ describe('BlogClient', () => {
       
       // Call the method
       const result = await blogClient.getCommentsByPostId(5, {
-        status: 'pending',
         lang: 'en'
       });
       
       // Check that apiClient.get was called correctly
       expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/api/blog/comments/post/5',
+        '/api/blog/posts/5/comments',
         {
-          status: 'pending',
           lang: 'en'
         }
       );
@@ -253,27 +251,69 @@ describe('BlogClient', () => {
         { id: 2, content: 'Comment 2' }
       ]);
     });
-    
-    test('getCommentById should throw an error if id is not provided', async () => {
-      await expect(blogClient.getCommentById()).rejects.toThrow('Comment ID is required');
-      await expect(blogClient.getCommentById(null)).rejects.toThrow('Comment ID is required');
-    });
-    
-    test('getCommentById should call apiClient.get with correct parameters', async () => {
-      // Mock the API response
-      mockApiClient.get.mockResolvedValueOnce({ id: 1, content: 'Comment 1' });
+
+    test('createComment should call apiClient.post with correct parameters', async () => {
+      const commentData = {
+        author_name: 'John Doe',
+        author_email: 'john@example.com',
+        content: 'Nice post!'
+      };
+      mockApiClient.post = jest.fn().mockResolvedValueOnce({ id: 1, ...commentData });
       
-      // Call the method
-      const result = await blogClient.getCommentById(1, { lang: 'en' });
+      const result = await blogClient.createComment(5, commentData);
       
-      // Check that apiClient.get was called correctly
-      expect(mockApiClient.get).toHaveBeenCalledWith(
-        '/api/blog/comments/1',
-        { lang: 'en' }
+      expect(mockApiClient.post).toHaveBeenCalledWith(
+        '/api/blog/posts/5/comments',
+        commentData
       );
-      
-      // Check the result
-      expect(result).toEqual({ id: 1, content: 'Comment 1' });
+      expect(result.id).toBe(1);
+    });
+  });
+
+  // Test Admin API
+  describe('Admin API methods', () => {
+    beforeEach(() => {
+      mockApiClient.post = jest.fn();
+      mockApiClient.put = jest.fn();
+      mockApiClient.delete = jest.fn();
+    });
+
+    test('adminGetPosts should call apiClient.get with correct parameters', async () => {
+      mockApiClient.get.mockResolvedValueOnce({ data: [], pagination: {} });
+      await blogClient.adminGetPosts({ page: 2, page_size: 50 });
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/admin/blog/posts', { page: 2, page_size: 50 });
+    });
+
+    test('adminCreatePost should call apiClient.post', async () => {
+      const postData = { title: 'New Post' };
+      await blogClient.adminCreatePost(postData);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/admin/blog/posts', postData);
+    });
+
+    test('adminUpdatePost should call apiClient.put', async () => {
+      const postData = { title: 'Updated' };
+      await blogClient.adminUpdatePost(1, postData);
+      expect(mockApiClient.put).toHaveBeenCalledWith('/api/admin/blog/posts/1', postData);
+    });
+
+    test('adminDeletePost should call apiClient.delete', async () => {
+      await blogClient.adminDeletePost(1);
+      expect(mockApiClient.delete).toHaveBeenCalledWith('/api/admin/blog/posts/1');
+    });
+
+    test('adminPublishPost should call apiClient.post', async () => {
+      await blogClient.adminPublishPost(1);
+      expect(mockApiClient.post).toHaveBeenCalledWith('/api/admin/blog/posts/1/publish');
+    });
+
+    test('adminGetCategories should call apiClient.get', async () => {
+      await blogClient.adminGetCategories();
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/admin/blog/categories');
+    });
+
+    test('adminGetCommentsByPostId should call apiClient.get', async () => {
+      await blogClient.adminGetCommentsByPostId(5);
+      expect(mockApiClient.get).toHaveBeenCalledWith('/api/admin/blog/posts/5/comments');
     });
   });
 });

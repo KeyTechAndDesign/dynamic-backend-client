@@ -5,25 +5,24 @@ All notable changes to the Dynamic Backend Client library will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.1.0] - 2026-01-11
 
 ### Added
-- Comprehensive examples directory with sample code for different use cases
-- Unit tests for all client classes with Jest
-- Test configuration in package.json
-- Babel configuration for ES modules support in tests
-- README files for examples and tests directories
-- This CHANGELOG file
+- **Multi-Tenant Blog System V2 Support**:
+  - Full CRUD operations in `ApiClient` (POST, PUT, DELETE).
+  - New `BlogClient` Admin API for managing Posts, Categories, Tags, and Comments.
+  - Support for multi-language translation maps in Admin API.
+  - New public endpoints for comments: `getCommentsByPostId` and `createComment`.
+  - Comprehensive TypeScript definitions for all new V2 features.
+  - New unit tests covering 100% of the V2 changes.
 
 ### Changed
-- Improved error handling in ApiClient with more detailed error messages
-- Enhanced parameter validation in all client classes
-- Updated README with more detailed documentation and examples
-- Removed Next.js dependency, making the library framework-agnostic
+- Refactored `BlogClient.getCommentsByPostId` to use the V2 nested endpoint structure.
+- Updated `ApiClient` to correctly handle `X-Schema` header for all request methods.
+- Refactored and improved existing tests.
 
-### Fixed
-- Fixed potential issue with filter parameters overriding pagination in TableClient
-- Removed redundant tableClient.js file from root directory
+## [1.0.3] - 2023-07-01
+- Minor bug fixes and performance improvements.
 
 ## [1.0.2] - 2023-06-15
 

@@ -4,75 +4,74 @@
 
 const { getLocalizedField, localizeObject } = require('../lib/localizeUtil');
 
-// Test data
-const testObject = {
-  id: 1,
-  nameEn: 'Laptop',
-  nameAz: 'Noutbuk',
-  nameRu: 'Ноутбук',
-  description_en: 'Powerful laptop for professionals',
-  description_az: 'Peşəkarlar üçün güclü noutbuk',
-  description_ru: 'Мощный ноутбук для профессионалов',
-  price: 999.99,
-  inStock: true
-};
+describe('localizeUtil', () => {
+  // Test data
+  const testObject = {
+    id: 1,
+    nameEn: 'Laptop',
+    nameAz: 'Noutbuk',
+    nameRu: 'Ноутбук',
+    description_en: 'Powerful laptop for professionals',
+    description_az: 'Peşəkarlar üçün güclü noutbuk',
+    description_ru: 'Мощный ноутбук для профессионалов',
+    price: 999.99,
+    inStock: true
+  };
 
-// Test getLocalizedField function
-console.log('Testing getLocalizedField function:');
+  describe('getLocalizedField', () => {
+    test('should work with camelCase format (En)', () => {
+      const nameEn = getLocalizedField(testObject, 'name', 'en');
+      expect(nameEn).toBe('Laptop');
+    });
 
-// Test with camelCase format
-const nameEn = getLocalizedField(testObject, 'name', 'en');
-console.log('nameEn:', nameEn); // Should be 'Laptop'
+    test('should work with camelCase format (Az)', () => {
+      const nameAz = getLocalizedField(testObject, 'name', 'az');
+      expect(nameAz).toBe('Noutbuk');
+    });
 
-const nameAz = getLocalizedField(testObject, 'name', 'az');
-console.log('nameAz:', nameAz); // Should be 'Noutbuk'
+    test('should work with underscore format (En)', () => {
+      const descEn = getLocalizedField(testObject, 'description', 'en');
+      expect(descEn).toBe('Powerful laptop for professionals');
+    });
 
-const nameRu = getLocalizedField(testObject, 'name', 'ru');
-console.log('nameRu:', nameRu); // Should be 'Ноутбук'
+    test('should work with underscore format (Az)', () => {
+      const descAz = getLocalizedField(testObject, 'description', 'az');
+      expect(descAz).toBe('Peşəkarlar üçün güclü noutbuk');
+    });
 
-// Test with underscore format
-const descEn = getLocalizedField(testObject, 'description', 'en');
-console.log('descEn:', descEn); // Should be 'Powerful laptop for professionals'
+    test('should fallback to default locale', () => {
+      const nameFr = getLocalizedField(testObject, 'name', 'fr', 'en');
+      expect(nameFr).toBe('Laptop');
+    });
 
-const descAz = getLocalizedField(testObject, 'description', 'az');
-console.log('descAz:', descAz); // Should be 'Peşəkarlar üçün güclü noutbuk'
+    test('should fallback to base field', () => {
+      const price = getLocalizedField(testObject, 'price', 'en');
+      expect(price).toBe(999.99);
+    });
 
-const descRu = getLocalizedField(testObject, 'description', 'ru');
-console.log('descRu:', descRu); // Should be 'Мощный ноутбук для профессионалов'
+    test('should return undefined for non-existent field', () => {
+      const nonExistent = getLocalizedField(testObject, 'nonExistent', 'en');
+      expect(nonExistent).toBeUndefined();
+    });
+  });
 
-// Test fallback to default locale
-const nameFr = getLocalizedField(testObject, 'name', 'fr', 'en');
-console.log('nameFr (fallback to en):', nameFr); // Should be 'Laptop'
+  describe('localizeObject', () => {
+    test('should localize to English', () => {
+      const enObject = localizeObject(testObject, 'en');
+      expect(enObject.name).toBe('Laptop');
+      expect(enObject.description).toBe('Powerful laptop for professionals');
+    });
 
-// Test fallback to base field
-const price = getLocalizedField(testObject, 'price', 'en');
-console.log('price:', price); // Should be 999.99
+    test('should localize to Azerbaijani', () => {
+      const azObject = localizeObject(testObject, 'az');
+      expect(azObject.name).toBe('Noutbuk');
+      expect(azObject.description).toBe('Peşəkarlar üçün güclü noutbuk');
+    });
 
-// Test with non-existent field
-const nonExistent = getLocalizedField(testObject, 'nonExistent', 'en');
-console.log('nonExistent:', nonExistent); // Should be undefined
-
-// Test localizeObject function
-console.log('\nTesting localizeObject function:');
-
-// Localize to English
-const enObject = localizeObject(testObject, 'en');
-console.log('English object:', JSON.stringify(enObject, null, 2));
-// Should have name: 'Laptop' and description: 'Powerful laptop for professionals'
-
-// Localize to Azerbaijani
-const azObject = localizeObject(testObject, 'az');
-console.log('Azerbaijani object:', JSON.stringify(azObject, null, 2));
-// Should have name: 'Noutbuk' and description: 'Peşəkarlar üçün güclü noutbuk'
-
-// Localize to Russian
-const ruObject = localizeObject(testObject, 'ru');
-console.log('Russian object:', JSON.stringify(ruObject, null, 2));
-// Should have name: 'Ноутбук' and description: 'Мощный ноутбук для профессионалов'
-
-// Localize to French (should fallback to English)
-const frObject = localizeObject(testObject, 'fr', 'en');
-console.log('French object (fallback to en):', JSON.stringify(frObject, null, 2));
-// Should have name: 'Laptop' and description: 'Powerful laptop for professionals'
-
-console.log('\nAll tests completed!');
+    test('should fallback when localizing', () => {
+      const frObject = localizeObject(testObject, 'fr', 'en');
+      expect(frObject.name).toBe('Laptop');
+      expect(frObject.description).toBe('Powerful laptop for professionals');
+    });
+  });
+});

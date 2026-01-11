@@ -1,6 +1,6 @@
 {
   "name": "@keytd/dynamic-backend-client",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "JavaScript client for the Dynamic Backend API",
   "main": "index.js",
   "scripts": {

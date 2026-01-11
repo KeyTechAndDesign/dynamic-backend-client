@@ -45,6 +45,24 @@ declare module '@keytd/dynamic-backend-client' {
      * @throws {Error} If the request fails
      */
     get(endpoint: string, params?: Record<string, any>, headers?: Record<string, string>): Promise<any>;
+
+    /**
+     * Make a POST request
+     * @throws {Error} If the request fails
+     */
+    post(endpoint: string, data?: Record<string, any>, headers?: Record<string, string>): Promise<any>;
+
+    /**
+     * Make a PUT request
+     * @throws {Error} If the request fails
+     */
+    put(endpoint: string, data?: Record<string, any>, headers?: Record<string, string>): Promise<any>;
+
+    /**
+     * Make a DELETE request
+     * @throws {Error} If the request fails
+     */
+    delete(endpoint: string, headers?: Record<string, string>): Promise<any>;
   }
 
   /**
@@ -146,17 +164,136 @@ declare module '@keytd/dynamic-backend-client' {
      * @throws {Error} If postId is not provided or the API request fails
      */
     getCommentsByPostId(postId: number, options?: {
-      status?: string;
       lang?: string;
     }): Promise<any[]>;
 
     /**
-     * Get a comment by ID
+     * Submit a comment for a blog post
+     * @throws {Error} If postId is not provided or the API request fails
+     */
+    createComment(postId: number, data: {
+      author_name: string;
+      author_email: string;
+      content: string;
+      parent_id?: number;
+    }): Promise<any>;
+
+    /**
+     * Get all blog posts (Admin)
+     * @throws {Error} If the API request fails
+     */
+    adminGetPosts(options?: {
+      page?: number;
+      page_size?: number;
+    }): Promise<any>;
+
+    /**
+     * Create a new blog post (Admin)
+     * @throws {Error} If the API request fails
+     */
+    adminCreatePost(data: any): Promise<any>;
+
+    /**
+     * Get a blog post by ID with all translations (Admin)
      * @throws {Error} If id is not provided or the API request fails
      */
-    getCommentById(id: number, options?: {
-      lang?: string;
-    }): Promise<any>;
+    adminGetPostById(id: number): Promise<any>;
+
+    /**
+     * Update a blog post (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminUpdatePost(id: number, data: any): Promise<any>;
+
+    /**
+     * Delete a blog post (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminDeletePost(id: number): Promise<any>;
+
+    /**
+     * Publish a blog post (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminPublishPost(id: number): Promise<any>;
+
+    /**
+     * Archive a blog post (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminArchivePost(id: number): Promise<any>;
+
+    /**
+     * Get all categories (Admin)
+     * @throws {Error} If the API request fails
+     */
+    adminGetCategories(): Promise<any[]>;
+
+    /**
+     * Create a new category (Admin)
+     * @throws {Error} If the API request fails
+     */
+    adminCreateCategory(data: any): Promise<any>;
+
+    /**
+     * Update a category (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminUpdateCategory(id: number, data: any): Promise<any>;
+
+    /**
+     * Delete a category (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminDeleteCategory(id: number): Promise<any>;
+
+    /**
+     * Get all tags (Admin)
+     * @throws {Error} If the API request fails
+     */
+    adminGetTags(): Promise<any[]>;
+
+    /**
+     * Create a new tag (Admin)
+     * @throws {Error} If the API request fails
+     */
+    adminCreateTag(data: any): Promise<any>;
+
+    /**
+     * Update a tag (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminUpdateTag(id: number, data: any): Promise<any>;
+
+    /**
+     * Delete a tag (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminDeleteTag(id: number): Promise<any>;
+
+    /**
+     * Get comments for a post (Admin)
+     * @throws {Error} If postId is not provided or the API request fails
+     */
+    adminGetCommentsByPostId(postId: number): Promise<any[]>;
+
+    /**
+     * Get a comment by ID (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminGetCommentById(id: number): Promise<any>;
+
+    /**
+     * Update a comment status or content (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminUpdateComment(id: number, data: any): Promise<any>;
+
+    /**
+     * Delete a comment (Admin)
+     * @throws {Error} If id is not provided or the API request fails
+     */
+    adminDeleteComment(id: number): Promise<any>;
   }
 
   /**
